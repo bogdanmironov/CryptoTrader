@@ -1,4 +1,4 @@
-package bg.mironov.bogdan.backend.model;
+package bg.mironov.bogdan.backend.model.account;
 
 import java.math.BigDecimal;
 import java.util.UUID;

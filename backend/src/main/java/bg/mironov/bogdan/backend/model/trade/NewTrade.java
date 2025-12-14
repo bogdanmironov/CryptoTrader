@@ -1,12 +1,9 @@
-package bg.mironov.bogdan.backend.model;
+package bg.mironov.bogdan.backend.model.trade;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
 
-public record TradeHistory (
-    long id,
-    UUID publicId,
+public record NewTrade(
     long accountId,
     String symbol,
     Instant executedAt,
@@ -14,4 +11,5 @@ public record TradeHistory (
     BigDecimal quantity,
     BigDecimal quotePrice,
     BigDecimal transactionDelta
-) {}
+) {
+}

@@ -1,9 +1,8 @@
-package bg.mironov.bogdan.backend.model;
+package bg.mironov.bogdan.backend.model.asset;
 
 import java.math.BigDecimal;
 
-public record Asset (
-    long id,
+public record NewAsset(
     long accountId,
     String symbol,
     BigDecimal quantity
