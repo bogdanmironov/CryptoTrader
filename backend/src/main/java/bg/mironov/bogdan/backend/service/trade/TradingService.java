@@ -11,6 +11,7 @@ import bg.mironov.bogdan.backend.model.trade.TradeDecision;
 import bg.mironov.bogdan.backend.repository.account.AccountRepository;
 import bg.mironov.bogdan.backend.repository.asset.AssetRepository;
 import bg.mironov.bogdan.backend.repository.history.TradeHistoryRepository;
+import bg.mironov.bogdan.backend.service.strategy.Sma20TradingStrategy;
 import bg.mironov.bogdan.backend.service.strategy.TradingStrategy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +24,23 @@ public class TradingService {
     private final AccountRepository accountRepo;
     private final AssetRepository assetRepo;
     private final TradeHistoryRepository tradeRepo;
-    private final TradingStrategy strategy;
+    private TradingStrategy strategy;
     private final MarketDataClient client;
 
-    public TradingService(AccountRepository accountRepo, AssetRepository assetRepo, TradeHistoryRepository tradeRepo,
-                          TradingStrategy strategy, MarketDataClient client) {
+    public TradingService(
+        AccountRepository accountRepo,
+        AssetRepository assetRepo,
+        TradeHistoryRepository tradeRepo,
+        MarketDataClient client) {
         this.accountRepo = accountRepo;
         this.assetRepo = assetRepo;
         this.tradeRepo = tradeRepo;
-        this.strategy = strategy;
+        this.strategy = new Sma20TradingStrategy();
         this.client = client;
+    }
+
+    public void reset() {
+        this.strategy = new Sma20TradingStrategy();
     }
 
     @Transactional

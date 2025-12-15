@@ -8,6 +8,7 @@ import bg.mironov.bogdan.backend.model.live.PriceTick;
 import bg.mironov.bogdan.backend.model.portfolio.PortfolioPoint;
 import bg.mironov.bogdan.backend.model.trade.TradeDecision;
 import bg.mironov.bogdan.backend.model.trade.TradeTrain;
+import bg.mironov.bogdan.backend.service.strategy.Sma20TradingStrategy;
 import bg.mironov.bogdan.backend.service.strategy.TradingStrategy;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +23,8 @@ public class TrainingService {
     private final MarketDataClient marketData;
 
 
-    public TrainingService(TradingStrategy strategy, MarketDataClient marketData) {
-        this.strategy = strategy;
+    public TrainingService(MarketDataClient marketData) {
+        this.strategy = new Sma20TradingStrategy();
         this.marketData = marketData;
     }
 

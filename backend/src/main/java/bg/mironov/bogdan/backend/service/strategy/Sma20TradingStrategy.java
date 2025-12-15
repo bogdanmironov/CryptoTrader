@@ -12,12 +12,11 @@ import java.math.RoundingMode;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-@Service
 public class Sma20TradingStrategy implements TradingStrategy {
 
     private static final int WINDOW = 20;
-    private static final BigDecimal BUY_THRESHOLD = new BigDecimal("0.995");
-    private static final BigDecimal SELL_THRESHOLD = new BigDecimal("1.005");
+    private static final BigDecimal BUY_THRESHOLD = new BigDecimal("0.9995");
+    private static final BigDecimal SELL_THRESHOLD = new BigDecimal("1.0005");
     private static final BigDecimal BUY_FRACTION = new BigDecimal("0.10");
     private static final BigDecimal SELL_FRACTION = new BigDecimal("0.25");
 

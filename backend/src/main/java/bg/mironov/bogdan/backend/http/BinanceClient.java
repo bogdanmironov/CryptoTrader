@@ -24,7 +24,8 @@ public class BinanceClient implements MarketDataClient {
     private static final int HISTORICAL_DATA_LIMIT = 1000;
     private static final int OPEN_TIME_RESPONSE_POSITION = 0;
     private static final int CLOSE_PRICE_RESPONSE_POSITION = 4;
-    private static final String HISTORICAL_DATA_INTERVAL = "1m";
+    //TODO make historical data interval be passed from FE.
+    private static final String HISTORICAL_DATA_INTERVAL = "1d";
 
     private final RestClient restClient;
     private final ObjectMapper mapper = new ObjectMapper();

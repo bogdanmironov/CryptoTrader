@@ -6,6 +6,7 @@ import bg.mironov.bogdan.backend.dto.response.TradingStatusResponse;
 import bg.mironov.bogdan.backend.scheduled.TradingEngine;
 import bg.mironov.bogdan.backend.service.trade.AccountService;
 import bg.mironov.bogdan.backend.service.trade.TradingQueryService;
+import bg.mironov.bogdan.backend.service.trade.TradingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,11 +24,14 @@ public class TradeController {
     private final TradingQueryService queryService;
     private final TradingEngine tradingEngine;
     private final AccountService accountService;
+    private final TradingService tradingService;
 
-    public TradeController(TradingQueryService queryService, TradingEngine tradingEngine, AccountService accountService) {
+    public TradeController(TradingQueryService queryService, TradingEngine tradingEngine, AccountService accountService,
+                           TradingService tradingService) {
         this.queryService = queryService;
         this.tradingEngine = tradingEngine;
         this.accountService = accountService;
+        this.tradingService = tradingService;
     }
 
     @GetMapping
@@ -60,6 +64,7 @@ public class TradeController {
         @RequestParam(defaultValue = "10000") BigDecimal initialBalance
     ) {
         accountService.reset(initialBalance);
+        tradingService.reset();
         return ResponseEntity.ok().build();
     }
 
