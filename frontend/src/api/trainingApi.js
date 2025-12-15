@@ -1,13 +1,8 @@
-import { apiFetch } from './client.js';
+import { apiFetch } from './client';
 
-export function runTraining({ symbol, from, to, initialBalance }) {
+export async function runTraining(payload) {
     return apiFetch('/training/run', {
         method: 'POST',
-        body: JSON.stringify({
-            symbol,
-            from,
-            to,
-            initialBalance,
-        }),
+        body: JSON.stringify(payload),
     });
 }
