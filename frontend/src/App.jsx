@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useTradingBot } from './hooks/useTradingBot';
+import TradesTable from './components/TradesTable';
 
 function App() {
-  const [count, setCount] = useState(0)
+    const {
+        running,
+        portfolio,
+        trades,
+        hasMore,
+        loading,
+        error,
+        start,
+        stop,
+        loadMoreTrades
+    } = useTradingBot();
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    if (loading) return <p>Loading…</p>;
+    if (error) return <p style={{ color: 'red' }}>{error}</p>;
+
+    return (
+        <div style={{ padding: 24 }}>
+            <h1>Crypto Trading Bot</h1>
+
+            <p>
+                Status:{' '}
+                <strong style={{ color: running ? 'green' : 'red' }}>
+                    {running ? 'RUNNING' : 'STOPPED'}
+                </strong>
+            </p>
+
+            <p>Portfolio value: {portfolio}</p>
+
+            <button onClick={start} disabled={running}>
+                Start
+            </button>
+
+            <button onClick={stop} disabled={!running} style={{ marginLeft: 8 }}>
+                Stop
+            </button>
+
+            <TradesTable trades={trades} />
+
+            {hasMore && (
+                <button
+                    onClick={loadMoreTrades}
+                    style={{ marginTop: 16 }}
+                >
+                    Load more
+                </button>
+            )}
+        </div>
+    );
 }
 
-export default App
+export default App;
