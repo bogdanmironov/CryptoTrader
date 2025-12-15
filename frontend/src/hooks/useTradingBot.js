@@ -1,59 +1,40 @@
-import { useEffect, useState } from 'react';
-import {
-    getTradingStatus,
-    startTrading,
-    stopTrading
-} from '../api/tradingApi';
+import { useCallback, useEffect, useState } from 'react';
+import { getTradingStatus, startTrading, stopTrading } from '../api/tradingApi';
 import { getPortfolio } from '../api/portfolioApi';
-import { getTrades } from '../api/tradesHistoryApi';
+import { useTradesPagination } from './useTradesPagination';
 
 export function useTradingBot() {
     const [running, setRunning] = useState(false);
     const [portfolio, setPortfolio] = useState(null);
-
-    const [trades, setTrades] = useState([]);
-    const [cursor, setCursor] = useState(null);
-    const [hasMore, setHasMore] = useState(true);
-
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    async function refreshStatus() {
-        const res = await getTradingStatus();
-        setRunning(res.running);
-    }
+    const tradesPager = useTradesPagination({
+        running,
+        pageSize: 20,
+        pollMs: 3000,
+    });
 
-    async function refreshPortfolio() {
+    const refreshStatus = useCallback(async () => {
+        const res = await getTradingStatus();
+        setRunning(!!res.running);
+    }, []);
+
+    const refreshPortfolio = useCallback(async () => {
         const value = await getPortfolio();
         setPortfolio(value);
-    }
+    }, []);
 
-    async function loadInitialTrades() {
-        const res = await getTrades(20, null);
-        setTrades(res.trades);
-        setCursor(res.nextCursor);
-        setHasMore(res.nextCursor !== null);
-    }
-
-    async function loadMoreTrades() {
-        if (!hasMore) return;
-
-        const res = await getTrades(20, cursor);
-
-        setTrades(prev => [...prev, ...res.trades]);
-        setCursor(res.nextCursor);
-        setHasMore(res.nextCursor !== null);
-    }
-
-    async function start() {
+    const start = useCallback(async () => {
         await startTrading();
         await refreshStatus();
-    }
+        await tradesPager.loadFirstPage();
+    }, [refreshStatus, tradesPager]);
 
-    async function stop() {
+    const stop = useCallback(async () => {
         await stopTrading();
         await refreshStatus();
-    }
+    }, [refreshStatus]);
 
     useEffect(() => {
         async function init() {
@@ -62,7 +43,7 @@ export function useTradingBot() {
                 await Promise.all([
                     refreshStatus(),
                     refreshPortfolio(),
-                    loadInitialTrades()
+                    tradesPager.loadFirstPage(),
                 ]);
             } catch (e) {
                 setError(e.message);
@@ -70,29 +51,23 @@ export function useTradingBot() {
                 setLoading(false);
             }
         }
-
         init();
     }, []);
 
     useEffect(() => {
         if (!running) return;
 
-        const id = setInterval(() => {
-            refreshPortfolio();
-        }, 3000);
-
+        const id = setInterval(refreshPortfolio, 3000);
         return () => clearInterval(id);
-    }, [running]);
+    }, [running, refreshPortfolio]);
 
     return {
         running,
         portfolio,
-        trades,
-        hasMore,
         loading,
         error,
         start,
         stop,
-        loadMoreTrades
+        tradesPager,
     };
 }

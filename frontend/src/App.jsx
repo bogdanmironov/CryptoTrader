@@ -5,14 +5,22 @@ function App() {
     const {
         running,
         portfolio,
-        trades,
-        hasMore,
         loading,
         error,
         start,
         stop,
-        loadMoreTrades
+        tradesPager,
     } = useTradingBot();
+
+    const {
+        trades,
+        currentPage,
+        hasPrevPage,
+        hasNextPage,
+        setCurrentPage,
+        loadNextPage,
+        loadFirstPage,
+    } = tradesPager;
 
     if (loading) return <p>Loading…</p>;
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -38,16 +46,29 @@ function App() {
                 Stop
             </button>
 
-            <TradesTable trades={trades} />
-
-            {hasMore && (
+            {/* Pagination */}
+            <div style={{ marginTop: 16 }}>
                 <button
-                    onClick={loadMoreTrades}
-                    style={{ marginTop: 16 }}
+                    onClick={() => setCurrentPage(p => p - 1)}
+                    disabled={!hasPrevPage}
                 >
-                    Load more
+                    Prev
                 </button>
-            )}
+
+                <span style={{ margin: '0 12px' }}>
+                    Page {currentPage + 1}
+                </span>
+
+                <button
+                    onClick={loadNextPage}
+                    disabled={!hasNextPage}
+                >
+                    Next
+                </button>
+            </div>
+
+            {/* Trades */}
+            <TradesTable trades={trades} />
         </div>
     );
 }
