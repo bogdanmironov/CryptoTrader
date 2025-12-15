@@ -1,5 +1,6 @@
 package bg.mironov.bogdan.backend.service.trade;
 
+import bg.mironov.bogdan.backend.dto.response.PortfolioResponse;
 import bg.mironov.bogdan.backend.dto.response.TradePageResponse;
 import bg.mironov.bogdan.backend.dto.response.TradeResponse;
 import bg.mironov.bogdan.backend.http.MarketDataClient;
@@ -36,24 +37,34 @@ public class TradingQueryService {
         this.tradeHistoryRepo = tradeHistoryRepo;
     }
 
-    public BigDecimal getCurrentPortfolioValue() {
+    public PortfolioResponse getCurrentPortfolioValue() {
         Account account = accountRepo.findLatest();
 
         if (account == null) {
-            return BigDecimal.ZERO;
+            return PortfolioResponse.zero();
         }
 
         Asset asset = assetRepo.findByAccountAndSymbol(account.id(), TRADING_ASSET);
 
         if (asset == null) {
-            return account.balance();
+            return new PortfolioResponse(
+                account.balance(),
+                BigDecimal.ZERO,
+                account.balance()
+            );
         }
 
         BigDecimal price =
             marketData.getLatestTick(asset.symbol()).price();
 
-        return account.balance()
+        var totalValue = account.balance()
             .add(asset.quantity().multiply(price));
+
+        return new PortfolioResponse(
+            account.balance(),
+            asset.quantity(),
+            totalValue
+        );
     }
 
     public TradePageResponse getTrades(int limit, Instant cursor) {

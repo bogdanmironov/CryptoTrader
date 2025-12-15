@@ -1,7 +1,7 @@
 import { useTradingBot } from '../hooks/useTradingBot';
 import TradesTable from '../components/TradesTable';
 import PortfolioChart from '../components/PortfolioChart';
-import { derivePortfolioHistory } from '../utils/derivePortfolioHistory';
+import { reconstructBackwards } from '../utils/derivePortfolioHistory';
 
 export default function LiveTab() {
     const {
@@ -24,7 +24,14 @@ export default function LiveTab() {
         loadNextPage,
     } = tradesPager;
 
-    const portfolioHistory = derivePortfolioHistory(trades);
+    const portfolioHistory =
+        portfolio && trades.length > 0
+            ? reconstructBackwards(
+                trades,
+                portfolio.cash,
+                portfolio.assetQuantity
+            )
+            : [];
 
     if (loading) return <p>Loading…</p>;
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -38,13 +45,17 @@ export default function LiveTab() {
                 </strong>
             </p>
 
-            <p>Portfolio value: {portfolio}</p>
+            <div className="portfolio">
+                <div>Cash: {portfolio.cash}</div>
+                <div>Asset qty: {portfolio.assetQuantity}</div>
+                <div>Total value: {portfolio.totalValue}</div>
+            </div>
 
             <button onClick={start} disabled={running}>
                 Start
             </button>
 
-            <button onClick={stop} disabled={!running} style={{ marginLeft: 8 }}>
+            <button onClick={stop} disabled={!running} style={{marginLeft: 8 }}>
                 Stop
             </button>
 
@@ -55,7 +66,9 @@ export default function LiveTab() {
                 Reset
             </button>
 
-            <PortfolioChart data={portfolioHistory} />
+            {portfolioHistory.length > 0 && (
+                <PortfolioChart data={portfolioHistory} />
+            )}
 
             <div style={{ marginTop: 16 }}>
                 <button

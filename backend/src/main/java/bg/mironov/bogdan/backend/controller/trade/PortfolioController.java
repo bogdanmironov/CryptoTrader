@@ -1,5 +1,6 @@
 package bg.mironov.bogdan.backend.controller.trade;
 
+import bg.mironov.bogdan.backend.dto.response.PortfolioResponse;
 import bg.mironov.bogdan.backend.service.trade.TradingQueryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ public class PortfolioController {
     }
 
     @GetMapping
-    public ResponseEntity<BigDecimal> portfolioValue() {
+    public ResponseEntity<PortfolioResponse> portfolioValue() {
         return ResponseEntity.ok(queryService.getCurrentPortfolioValue());
     }
 }

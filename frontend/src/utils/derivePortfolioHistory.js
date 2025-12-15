@@ -16,3 +16,35 @@ export function derivePortfolioHistory(trades) {
         };
     });
 }
+
+export function reconstructBackwards(
+    trades,
+    currentCash,
+    currentAsset
+) {
+    let cash = Number(currentCash)
+    let asset = Number(currentAsset)
+
+    const timeline = []
+
+    for (let i = trades.length - 1; i >= 0; i--) {
+        const t = trades[i]
+
+        timeline.push({
+            time: t.executedAt,
+            value: cash + asset * t.quotePrice,
+            cash,
+            asset,
+        })
+
+        if (t.action === 'BUY') {
+            asset -= t.quantity
+            cash += t.quantity * t.quotePrice
+        } else if (t.action === 'SELL') {
+            asset += t.quantity
+            cash -= t.quantity * t.quotePrice
+        }
+    }
+
+    return timeline.reverse()
+}
