@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getTradingStatus, startTrading, stopTrading } from '../api/tradingApi';
+import { getTradingStatus, startTrading, stopTrading, resetTrading } from '../api/tradingApi';
 import { getPortfolio } from '../api/portfolioApi';
 import { useTradesPagination } from './useTradesPagination';
 
@@ -49,6 +49,21 @@ export function useTradingBot() {
         await refreshStatus();
     }, [refreshStatus]);
 
+    const reset = useCallback(async (initialBalance = 10000) => {
+        try {
+            await resetTrading(initialBalance);
+
+            setRunning(false);
+            setPortfolio(initialBalance);
+            setPortfolioHistory([]);
+
+            tradesPager.reset();
+
+        } catch (e) {
+            setError(e.message);
+        }
+    }, [tradesPager]);
+
     useEffect(() => {
         async function init() {
             try {
@@ -83,6 +98,7 @@ export function useTradingBot() {
         error,
         start,
         stop,
+        reset,
         tradesPager,
     };
 }

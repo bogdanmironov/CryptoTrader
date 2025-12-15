@@ -16,6 +16,10 @@ export function stopTrading() {
     });
 }
 
+export function resetTrading() {
+    return apiFetch('/trades/reset', { method: 'POST' });
+}
+
 export function getTrades({ limit = 20, cursor = null } = {}) {
     const params = new URLSearchParams({ limit });
 

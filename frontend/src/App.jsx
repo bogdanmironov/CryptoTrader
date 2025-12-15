@@ -1,16 +1,17 @@
 import { useTradingBot } from './hooks/useTradingBot';
 import TradesTable from './components/TradesTable';
 import PortfolioChart from './components/PortfolioChart';
+import { derivePortfolioHistory } from './utils/derivePortfolioHistory';
 
 function App() {
     const {
         running,
         portfolio,
-        portfolioHistory,
         loading,
         error,
         start,
         stop,
+        reset,
         tradesPager,
     } = useTradingBot();
 
@@ -24,16 +25,18 @@ function App() {
         loadFirstPage,
     } = tradesPager;
 
+    const portfolioHistory = derivePortfolioHistory(trades);
+
     if (loading) return <p>Loading…</p>;
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
     return (
-        <div style={{ padding: 24 }}>
+        <div style={{padding: 24}}>
             <h1>Crypto Trading Bot</h1>
 
             <p>
                 Status:{' '}
-                <strong style={{ color: running ? 'green' : 'red' }}>
+                <strong style={{color: running ? 'green' : 'red'}}>
                     {running ? 'RUNNING' : 'STOPPED'}
                 </strong>
             </p>
@@ -44,13 +47,20 @@ function App() {
                 Start
             </button>
 
-            <button onClick={stop} disabled={!running} style={{ marginLeft: 8 }}>
+            <button onClick={stop} disabled={!running} style={{marginLeft: 8}}>
                 Stop
             </button>
 
-            <PortfolioChart data={portfolioHistory} />
+            <button
+                onClick={() => reset(10000)}
+                style={{marginLeft: 8, background: '#f87171'}}
+            >
+                Reset
+            </button>
 
-            <div style={{ marginTop: 16 }}>
+            <PortfolioChart data={portfolioHistory}/>
+
+            <div style={{marginTop: 16}}>
                 <button
                     onClick={() => setCurrentPage(p => p - 1)}
                     disabled={!hasPrevPage}
@@ -58,7 +68,7 @@ function App() {
                     Prev
                 </button>
 
-                <span style={{ margin: '0 12px' }}>
+                <span style={{margin: '0 12px'}}>
                     Page {currentPage + 1}
                 </span>
 
@@ -70,8 +80,7 @@ function App() {
                 </button>
             </div>
 
-            {/* Trades */}
-            <TradesTable trades={trades} />
+            <TradesTable trades={trades}/>
         </div>
     );
 }

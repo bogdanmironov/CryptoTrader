@@ -52,6 +52,19 @@ export function useTradesPagination({
         }
     }, [currentPage, pageSize]);
 
+    const reset = useCallback(() => {
+        if (pollRef.current) {
+            clearInterval(pollRef.current);
+            pollRef.current = null;
+        }
+
+        setPages([]);
+        setCurrentPage(0);
+        setLoading(false);
+        setError(null);
+
+        cursorsRef.current = [null];
+    }, []);
 
     useEffect(() => {
         if (!running) return;
@@ -111,6 +124,7 @@ export function useTradesPagination({
         loadFirstPage,
         loadNextPage,
 
+        reset,
         loading,
         error,
     };
