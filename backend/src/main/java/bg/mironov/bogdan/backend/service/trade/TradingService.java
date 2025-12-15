@@ -1,5 +1,6 @@
 package bg.mironov.bogdan.backend.service.trade;
 
+import bg.mironov.bogdan.backend.http.MarketDataClient;
 import bg.mironov.bogdan.backend.model.account.Account;
 import bg.mironov.bogdan.backend.model.asset.Asset;
 import bg.mironov.bogdan.backend.model.asset.NewAsset;
@@ -18,21 +19,25 @@ import java.math.BigDecimal;
 
 @Service
 public class TradingService {
+    private static final String TRADING_ASSET = "BTCUSDT";
     private final AccountRepository accountRepo;
     private final AssetRepository assetRepo;
     private final TradeHistoryRepository tradeRepo;
     private final TradingStrategy strategy;
+    private final MarketDataClient client;
 
     public TradingService(AccountRepository accountRepo, AssetRepository assetRepo, TradeHistoryRepository tradeRepo,
-                          TradingStrategy strategy) {
+                          TradingStrategy strategy, MarketDataClient client) {
         this.accountRepo = accountRepo;
         this.assetRepo = assetRepo;
         this.tradeRepo = tradeRepo;
         this.strategy = strategy;
+        this.client = client;
     }
 
     @Transactional
-    public void tick(PriceTick tick) {
+    public void tick() {
+        PriceTick tick = client.getLatestTick(TRADING_ASSET);
         Account account = accountRepo.findLatestForUpdate();
 
         if (account == null) {

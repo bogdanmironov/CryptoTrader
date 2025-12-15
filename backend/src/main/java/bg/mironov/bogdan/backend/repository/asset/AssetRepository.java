@@ -11,6 +11,8 @@ public interface AssetRepository {
 
     Asset findByAccountAndSymbolForUpdate(long accountId, String symbol);
 
+    Asset findByAccountAndSymbol(long accountId, String symbol);
+
     void updateQuantity(long assetId, BigDecimal newQuantity);
 
     void insert(NewAsset newAsset);

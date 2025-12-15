@@ -41,6 +41,18 @@ public class JdbcAssetRepository implements AssetRepository {
     }
 
     @Override
+    public Asset findByAccountAndSymbol(long accountId, String symbol) {
+        return jdbc.sql("""
+                    SELECT id, account_id, symbol, quantity FROM asset
+                    WHERE account_id = ? AND symbol = ?
+                """)
+            .params(accountId, symbol)
+            .query(Asset.class)
+            .optional()
+            .orElse(null);
+    }
+
+    @Override
     public void updateQuantity(long assetId, BigDecimal newQuantity) {
         jdbc.sql("""
                     UPDATE asset SET quantity = ? WHERE id = ?

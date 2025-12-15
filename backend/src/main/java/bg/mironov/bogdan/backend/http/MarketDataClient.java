@@ -8,4 +8,6 @@ import java.util.List;
 public interface MarketDataClient {
 
     List<PriceTick> getHistoricalTicks(String symbol, Instant from, Instant to);
+
+    PriceTick getLatestTick(String symbol);
 }
