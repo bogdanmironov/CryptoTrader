@@ -1,10 +1,12 @@
 import { useTradingBot } from './hooks/useTradingBot';
 import TradesTable from './components/TradesTable';
+import PortfolioChart from './components/PortfolioChart';
 
 function App() {
     const {
         running,
         portfolio,
+        portfolioHistory,
         loading,
         error,
         start,
@@ -46,7 +48,8 @@ function App() {
                 Stop
             </button>
 
-            {/* Pagination */}
+            <PortfolioChart data={portfolioHistory} />
+
             <div style={{ marginTop: 16 }}>
                 <button
                     onClick={() => setCurrentPage(p => p - 1)}

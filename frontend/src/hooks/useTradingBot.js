@@ -6,6 +6,7 @@ import { useTradesPagination } from './useTradesPagination';
 export function useTradingBot() {
     const [running, setRunning] = useState(false);
     const [portfolio, setPortfolio] = useState(null);
+    const [portfolioHistory, setPortfolioHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -21,8 +22,20 @@ export function useTradingBot() {
     }, []);
 
     const refreshPortfolio = useCallback(async () => {
-        const value = await getPortfolio();
-        setPortfolio(value);
+        try {
+            const value = await getPortfolio();
+            setPortfolio(value);
+
+            setPortfolioHistory(prev => [
+                ...prev,
+                {
+                    time: new Date().toISOString(),
+                    value
+                }
+            ]);
+        } catch (e) {
+            setError(e.message);
+        }
     }, []);
 
     const start = useCallback(async () => {
@@ -40,6 +53,7 @@ export function useTradingBot() {
         async function init() {
             try {
                 setLoading(true);
+                setPortfolioHistory([]);
                 await Promise.all([
                     refreshStatus(),
                     refreshPortfolio(),
@@ -64,6 +78,7 @@ export function useTradingBot() {
     return {
         running,
         portfolio,
+        portfolioHistory,
         loading,
         error,
         start,
